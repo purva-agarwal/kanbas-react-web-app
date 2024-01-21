@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+    <head></head>
+    <body>
+        <select id="edit">
+            <option value="Grade">Speed Grader</option>
+            <option value="Edit">Edit</option>
+            <option value="Duplicate">Duplicate</option>
+            <option value="Delete">Delete</option>
+            <option value="Move">Move To...</option>
+            <option value="Send">Send To...</option>
+            <option value="Copy">Copy To...</option>
+            <option value="Share">Share to Commons</option>
+        </select>
+        <hr>  
+        <h3>Assignment Name</h3>    
+        <input type="text" placeholder="assignment" value="A1 - ENV + HTML"/>
+        </br></br>
+        <textarea>This is the Assignment Description</textarea>
+        </br>
+        <label for="points">Points</label></br>
+            <input type="text" id="points"
+                    placeholder="Points" value="100"/></br></br>
+        <label for="assignment-group">Assignment Group</label><br/>
+        <select id="assignment-group">
+            <option>ASSIGNMENTS</option>
+            <option>A1 and A2</option>
+        </select><br/><br/>
+        <label for="display-grade">Display Grade As</label><br/>
+        <select id="display-grade">
+            <option>Percentage</option>
+            <option>Grade</option>
+            <option>Value</option>
+        </select><br/><br/>
+        <label for="submission-type">Submission Type</label><br/>
+        <select id="submission-type">
+            <option>Online</option>
+            <option>In Person</option>
+        </select><br/><br/>
+        <label>Online Entry Options</label>
+        <br/>
+        <input type="checkbox" value="Text" name="online-options" id="chkbox-text" checked/>
+        <label for="chkbox-text">Text Entry</label>    <br/>
+
+        <input type="checkbox" value="URL" name="online-options" id="chkbox-url"/>
+        <label for="chkbox-url">Website URL</label><br/>
+
+        <input type="checkbox" value="Media" name="online-options" id="chkbox-media" checked/>
+        <label for="chkbox-media">Media Recordings</label> <br/>
+
+        <input type="checkbox" value="Annotation" name="online-options" id="chkbox-annotation"/>
+        <label for="chkbox-annotation">Student Annotation</label> <br/>
+
+        <input type="checkbox" value="File" name="online-options" id="chkbox-file"/>
+        <label for="chkbox-file">File Uploads</label><br/><br/>
+
+        <label for="assign">Assign</label></br>
+        <label for="assign">Assign To</label></br>
+        <input type="text" id="assign" placeholder="Assign" value="Everyone"/></br></br>
+
+        <label for="due">Due</label><br/>
+        <input type="date" value="2021-01-01" id="due" name="due"></br></br>
+        <label for="available">Available From</label><br/>
+        <input type="date" value="2021-01-01" id="available" name="available"></br></br>
+        <label for="until">Due</label><br/>
+        <input type="date" value="2021-01-01" id="until" name="until"></br></br>
+        <button>Cancel</button>
+        <button>Save</button>
+
+    </body>
+</html>
