@@ -1,18 +1,27 @@
-import { FaArrowDown, FaCog, FaEllipsisV, FaFileExport, FaFileImport, FaFilter, FaSearch, FaSignOutAlt } from "react-icons/fa";
+import React, { useState } from 'react';
+import { FaArrowDown, FaCog, FaEllipsisV, FaFileExport, FaFileImport, FaFilter, FaKeyboard, FaSearch, FaSignOutAlt } from "react-icons/fa";
 import { assignments, enrollments, grades, users } from "../../Database";
 import { useParams } from "react-router-dom";
 function Grades() {
   const { courseId } = useParams();
   const as = assignments.filter((assignment) => assignment.course === courseId);
   const es = enrollments.filter((enrollment) => enrollment.course === courseId);
+  const [showIcon, setShowIcon] = useState(false);
+  const handleIconClick = () => {setShowIcon(true);};
   return (
-    <div>
-      <h1>Grades</h1>
-      <div className="table-responsive">
+    <div className='d-flex'>
+      <div className="flex-fill table-responsive">
       <table width="100%">
             <tbody>
                 <tr>
                     <td> 
+                    <select id="select-gradebook" style={{border: 0, color:'red'}}>
+                            <option value="Gradebook">Gradebook</option>
+                            <option value="Change">Change Gradebook View</option>
+                            <option value="Traditional">Traditional Gradebook</option>
+                            <option value="Individual">Individual Gradebook</option>
+                        </select>
+                        <FaKeyboard style={{color:'red'}}/>
                     </td>
                     <td>
                         <div className = "float-end">
@@ -49,29 +58,34 @@ function Grades() {
         <br/>
         <button className="btn btn-outline-secondary"><FaFilter/>Apply Filters</button><br/><br/>
         <table className="table table-striped">
-          <thead className="thead-light">
-            <th>Student Name</th>
-            {as.map((assignment) => (<th>{assignment.title}</th>))}
-          </thead>
-          <tbody>
+        <tbody>
+          <tr>
+            <td>Student Name</td>
+            {as.map((assignment) => (<td>{assignment.title}</td>))}
+          </tr>
+          
             {es.map((enrollment) => {
               const user = users.find((user) => user._id === enrollment.user);
               return (
                 <tr>
                    <td style={{color:'red'}}>{user?.firstName} {user?.lastName}</td>
-                   {assignments.map((assignment) => {
+                   {as.map((assignment) => {
                      const grade = grades.find(
                        (grade) => grade.student === enrollment.user && grade.assignment === assignment._id);
-                       return (<td><div className="input-group">
-                       <input type="number" className="form-control" value={grade?.grade || ""} />
-                       <span className="input-group-text">
-                           <FaSignOutAlt/>
-                       </span>
-                   </div>
+                       return (
+                       <td>
+                            <div className="input-group"  style={{width:90}}>
+                                <input onClick={handleIconClick} type="number" className="form-control" style={{fontSize: '0.7em'}} value={grade?.grade || ""} />
+                                <button className='btn btn-outline-primary input-group-text'>
+                                  {showIcon && <FaSignOutAlt style={{ fontSize: '0.7em' }} />}
+                                </button>
+                            </div>
                         </td>);})}
                 </tr>);
             })}
-          </tbody></table>
-      </div></div>);
+        </tbody>
+        </table>
+      </div>
+    </div>);
 }
-export default Grades;
+export default Grades

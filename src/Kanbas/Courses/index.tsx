@@ -1,51 +1,25 @@
-import { Link } from "react-router-dom";
 import { courses } from "../../Kanbas/Database";
-import { Navigate, Route, Routes, useParams } from "react-router-dom";
-import { HiMiniBars3 } from "react-icons/hi2";
+import { Navigate, Route, Routes, useLocation, useParams } from "react-router-dom";
 import CourseNavigation from "./Navigation";
 import Home from "./Home";
-import Modules from "./Modules";
 import Assignments from "./Assignments";
 import AssignmentEditor from "./Assignments/Editor";
 import Grades from "./Grades";
-import { FaGlasses } from "react-icons/fa";
+import CourseHeader from "./header";
+import Modules from "./Modules";
 
 function Courses() {
   const { courseId } = useParams();
+  const {pathname} = useLocation();
+  console.log(pathname);
+
   const course = courses.find((course) => course._id === courseId);
   return (
-    <div>
-      <div>
-      <span className="float-end"><button className="btn btn-outline-secondary"><FaGlasses/> Student View</button></span>
-      <nav aria-label="breadcrumb">
-      <ol className="breadcrumb" style={{marginLeft:80}}>
-          <li className="breadcrumb-item"><Link to=""><HiMiniBars3 />   Course {course?.name}</Link></li>
-          <Routes>
-            <Route path="Home" element={<li className="breadcrumb-item active" aria-current="page"><Link to="">Home</Link></li>} />
-            <Route path="Modules" element={<li className="breadcrumb-item active" aria-current="page"><Link to="">Modules</Link></li>} />
-            <Route path="Piazza" element={<li className="breadcrumb-item active" aria-current="page"><Link to="">Piazza</Link></li>} />
-            <Route path="Zoom Meetings" element={<li className="breadcrumb-item active" aria-current="page"><Link to="">Zoom Meetings</Link></li>} />
-            <Route path="Assignments" element={<li className="breadcrumb-item active" aria-current="page"><Link to="">Assignments</Link></li>} />
-            <Route path="Assignments/:assignmentId" element={<li className="breadcrumb-item active" aria-current="page"><Link to="">Assignment Editor</Link></li>} />
-            <Route path="Quizzes" element={<li className="breadcrumb-item active" aria-current="page"><Link to="">Quizzes</Link></li>} />
-            <Route path="Grades" element={<li className="breadcrumb-item active" aria-current="page"><Link to="">Grades</Link></li>} />
-            <Route path="People" element={<li className="breadcrumb-item active" aria-current="page"><Link to="">People</Link></li>} />
-            <Route path="Panapto Video" element={<li className="breadcrumb-item active" aria-current="page"><Link to="">Panapto Video</Link></li>} />
-            <Route path="Discussions" element={<li className="breadcrumb-item active" aria-current="page"><Link to="">Discussions</Link></li>} />
-            <Route path="Announcements" element={<li className="breadcrumb-item active" aria-current="page"><Link to="">Announcements</Link></li>} />
-            <Route path="Pages" element={<li className="breadcrumb-item active" aria-current="page"><Link to="">Pages</Link></li>} />
-            <Route path="Files" element={<li className="breadcrumb-item active" aria-current="page"><Link to="">Files</Link></li>} />
-
-          </Routes>
-        </ol>
-        <hr/>
-      </nav>
-      <h6 style={{marginLeft: 80}}>CS {course?._id} {course?.number}</h6>
-      </div>
-      <CourseNavigation />
-        <div
-          className="overflow-y-scroll position-fixed bottom-0 end-0"
-          style={{ left: "300px", top: "50px" }} >
+  <div>
+    <CourseHeader course_id={course?._id || ''} location={pathname} />
+    <div className="d-flex">
+      <CourseNavigation course_id={course?._id || ''}/>
+      <div className="flex-grow-1">
           <Routes>
             <Route path="/" element={<Navigate to="Home" />} />
             <Route path="Home" element={<Home/>} />
@@ -64,6 +38,7 @@ function Courses() {
             <Route path="Files" element={<h1>Files</h1>} />
           </Routes>
         </div>
+    </div>
     </div>
   );
 }
