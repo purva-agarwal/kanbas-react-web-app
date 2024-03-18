@@ -3,6 +3,14 @@ import "./index.css";
 import { modules } from "../../Database";
 import { FaEllipsisV, FaCheckCircle, FaPlusCircle, FaArrowDown, FaCaretDown, FaCaretRight, FaLink } from "react-icons/fa";
 import { useParams } from "react-router";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  addModule,
+  deleteModule,
+  updateModule,
+  setModule,
+} from "./reducer";
+import { KanbasState } from "../../store";
 function ModuleList() {
   type Module = {
     _id: string;
@@ -13,10 +21,15 @@ function ModuleList() {
   const { courseId } = useParams();
   const modulesList = modules.filter((module) => module.course === courseId);
   const [selectedModule, setSelectedModule] = useState<Module | null>(modulesList[0]);
-  
   const toggleModule = (module: Module) => {
     setSelectedModule((prevModule) => (prevModule === module ? null : module));
   };
+  const moduleList = useSelector((state: KanbasState) => 
+    state.modulesReducer.modules);
+  const module = useSelector((state: KanbasState) => 
+    state.modulesReducer.module);
+  const dispatch = useDispatch();
+
   return (
     <>
         <div>
@@ -34,10 +47,38 @@ function ModuleList() {
       </div>
       <hr/>
       <ul className="list-group wd-modules">
-        {modulesList.map((module) => (
+      <li className="list-group-item">
+      <button onClick={() => dispatch(addModule({ ...module, course: courseId }))}>
+           Add
+        </button>
+        <button onClick={() => dispatch(updateModule(module))}>
+          Update
+        </button>
+        <input
+          value={module.name}
+          onChange={(e) =>
+            dispatch(setModule({ ...module, name: e.target.value }))
+          }/>
+        <textarea
+          value={module.description}
+          onChange={(e) =>
+            dispatch(setModule({ ...module, description: e.target.value }))
+          }/>
+      </li>
+        {modulesList
+        .filter((module) => module.course === courseId)
+        .map((module) => (
           <li
             className="list-group-item"
             onClick={() => toggleModule(module)}>
+            <button
+              onClick={() => dispatch(setModule(module))}>
+              Edit
+            </button>
+            <button
+              onClick={() => dispatch(deleteModule(module._id))}>
+              Delete
+            </button>
             <div>
               <FaEllipsisV className="me-2" />
               {selectedModule === module ? (
@@ -46,6 +87,7 @@ function ModuleList() {
                 <FaCaretRight className="me-2" />
               )}
               {module.name}
+              <p>{module.description}</p>
               <span className="float-end">
                 <FaCheckCircle className="text-success" />
                 <FaCaretDown className="ms-2" />

@@ -8,7 +8,7 @@ import Grades from "./Grades";
 import CourseHeader from "./header";
 import Modules from "./Modules";
 
-function Courses() {
+function Courses({ courses }: { courses: any[]; }) {
   const { courseId } = useParams();
   const {pathname} = useLocation();
   console.log(pathname);
