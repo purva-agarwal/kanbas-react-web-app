@@ -12,23 +12,26 @@ import {
 } from "./reducer";
 import { KanbasState } from "../../store";
 function ModuleList() {
+  const { courseId } = useParams();
+  const moduleList = useSelector((state: KanbasState) => 
+    state.modulesReducer.modules);
+  const module = useSelector((state: KanbasState) => 
+    state.modulesReducer.module);
+  const dispatch = useDispatch();
   type Module = {
     _id: string;
     name: string;
     lessons?: { _id: string; name: string }[];
     course: string;
   };
-  const { courseId } = useParams();
-  const modulesList = modules.filter((module) => module.course === courseId);
-  const [selectedModule, setSelectedModule] = useState<Module | null>(modulesList[0]);
+  const [selectedModule, setSelectedModule] = useState<Module | null>(moduleList[0]);
+
   const toggleModule = (module: Module) => {
+    dispatch(setModule(module));
     setSelectedModule((prevModule) => (prevModule === module ? null : module));
   };
-  const moduleList = useSelector((state: KanbasState) => 
-    state.modulesReducer.modules);
-  const module = useSelector((state: KanbasState) => 
-    state.modulesReducer.module);
-  const dispatch = useDispatch();
+
+
 
   return (
     <>
@@ -46,39 +49,45 @@ function ModuleList() {
         <button className="btn btn-outline-secondary"><FaEllipsisV/></button>
       </div>
       <hr/>
+
+      
+      <div className="flex-fill" >
+        <div className="mb-3">
+          <input className="form-control mb-2"
+            value={module.name}
+            onChange={(e) =>
+              dispatch(setModule({ ...module, name: e.target.value }))
+            }/><br/>
+          <textarea className="form-control mb-2"
+            value={module.description}
+            onChange={(e) =>
+              dispatch(setModule({ ...module, description: e.target.value }))
+            }/>
+            <button className="btn btn-success" onClick={() => dispatch(addModule({ ...module, course: courseId }))}>
+            Add
+          </button>
+          <button className="btn btn-primary" onClick={() => dispatch(updateModule(module))}>
+            Update
+          </button>
+        </div>
+      </div>
       <ul className="list-group wd-modules">
-      <li className="list-group-item">
-      <button onClick={() => dispatch(addModule({ ...module, course: courseId }))}>
-           Add
-        </button>
-        <button onClick={() => dispatch(updateModule(module))}>
-          Update
-        </button>
-        <input
-          value={module.name}
-          onChange={(e) =>
-            dispatch(setModule({ ...module, name: e.target.value }))
-          }/>
-        <textarea
-          value={module.description}
-          onChange={(e) =>
-            dispatch(setModule({ ...module, description: e.target.value }))
-          }/>
-      </li>
-        {modulesList
+        {moduleList
         .filter((module) => module.course === courseId)
         .map((module) => (
           <li
             className="list-group-item"
             onClick={() => toggleModule(module)}>
-            <button
-              onClick={() => dispatch(setModule(module))}>
-              Edit
-            </button>
-            <button
-              onClick={() => dispatch(deleteModule(module._id))}>
-              Delete
-            </button>
+            <span className="float-end">
+                <button className="btn btn-success"
+                  onClick={() => dispatch(setModule(module))}>
+                  Edit
+                </button>
+                <button className="btn btn-danger"
+                  onClick={() => dispatch(deleteModule(module._id))}>
+                  Delete
+                </button>
+              </span>
             <div>
               <FaEllipsisV className="me-2" />
               {selectedModule === module ? (
@@ -87,7 +96,8 @@ function ModuleList() {
                 <FaCaretRight className="me-2" />
               )}
               {module.name}
-              <p>{module.description}</p>
+              <br/>
+              {module.description}
               <span className="float-end">
                 <FaCheckCircle className="text-success" />
                 <FaCaretDown className="ms-2" />
@@ -97,7 +107,7 @@ function ModuleList() {
             </div>
             {selectedModule === module && (
               <ul className="list-group">
-                {module.lessons?.map((lesson) => (
+                {module.lessons?.map((lesson: { _id: string; name: string }) => (
                   <li className="list-group-item">
                     <FaEllipsisV className="me-2" />
                     <FaLink className="me-2"/>

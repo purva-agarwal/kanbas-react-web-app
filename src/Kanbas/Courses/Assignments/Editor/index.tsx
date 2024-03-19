@@ -1,19 +1,54 @@
-import React from "react";
-import { useNavigate, useParams, Link } from "react-router-dom";
+import React, {useEffect} from "react";
+import { useNavigate, useLocation, useParams, Link } from "react-router-dom";
 import { assignments } from "../../../Database";
 import { FaCheckCircle, FaEllipsisV } from "react-icons/fa";
+import { KanbasState } from "../../../store";
+import {
+    addAssignment,
+    deleteAssignment,
+    updateAssignment,
+    selectAssignment,
+  } from "../reducer";
+
+import { useSelector, useDispatch } from "react-redux";
 function AssignmentEditor() {
-  const { assignmentId } = useParams();
-  const assignment = assignments.find(
-    (assignment) => assignment._id === assignmentId);
-  const { courseId } = useParams();
+    const { courseId, assignmentId } = useParams();
+  const { pathname } = useLocation();
   const navigate = useNavigate();
+  const assignments = useSelector(
+    (state: KanbasState) => state.assignmentReducer.assignments
+  );
+  const tempAssignment = useSelector(
+    (state: KanbasState) => state.assignmentReducer.tempAssignment
+  );
+  const assignment = useSelector(
+    (state: KanbasState) => state.assignmentReducer.assignment
+  );
   const handleSave = () => {
-    console.log("Actually saving assignment TBD in later assignments");
+    if (pathname.includes("new")) {
+      dispatch(addAssignment({ ...assignment, course: courseId }));
+    } else {
+      dispatch(updateAssignment(assignment));
+    }
     navigate(`/Kanbas/Courses/${courseId}/Assignments`);
   };
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (assignmentId !== "new") {
+      const currentAssignment = assignments.find(
+        (assignment) => assignment._id === assignmentId
+      );
+      if (currentAssignment) {
+        dispatch(selectAssignment(currentAssignment));
+      }
+    } else {
+      dispatch(selectAssignment(tempAssignment));
+    }
+  }, [assignmentId, assignments, tempAssignment, dispatch]);
+
   return (
-    <div className="flex-fill">
+        <div className="flex-fill">
         <span className="float-end">
             <FaCheckCircle className="text-success"/> Published
             <button className="btn btn-outline-secondary"><FaEllipsisV/></button>
@@ -21,18 +56,24 @@ function AssignmentEditor() {
         <hr/>  
         <div className="mb-3">
             <h2>Assignment Name</h2>
-            <input value={assignment?.title} className="form-control mb-2" />
+            <input value={assignment?.title} onChange={(e) =>
+            dispatch(selectAssignment({ ...assignment, title: e.target.value }))
+          } className="form-control mb-2" />
         </div>
         <div className="mb-3 row">
             <div className="col-md-6">
-                <textarea className="form-control" id="assignmentDescription">This is the assignment description.</textarea>
+                <textarea className="form-control" id="assignmentDescription"  value={assignment?.description} onChange={(e) =>
+            dispatch(selectAssignment({ ...assignment, description: e.target.value }))
+          }  ></textarea>
             </div>
         </div>
             
         <div className="mb-3 row">
             <label htmlFor="points" className="form-label col-sm-2">Points</label>
             <div className="col-md-4">
-                <input type="number" className="form-control" id="points" value="100"/>
+                <input type="number" value = {assignment?.points} className="form-control" id="points" onChange={(e) =>
+            dispatch(selectAssignment({ ...assignment, points: e.target.value }))
+          } />
             </div>
         </div>
             
@@ -75,17 +116,26 @@ function AssignmentEditor() {
                     </div>
                     <div className="list-group-item">
                         <label htmlFor="dueDate" className="form-label">Due Date</label>
-                        <input type="date" className="form-control" value="2020-09-01" />
+                        <input type="date" className="form-control"  value = {assignment?.dueDate}
+   onChange={(e) =>
+            dispatch(selectAssignment({ ...assignment, dueDate: e.target.value }))
+          } />
                     </div>
                     <div className="list-group-item">
                         <div className="row">
                             <div className="col-md-6">
                                 <label htmlFor="availableFrom" className="form-label">Available from</label>
-                                <input type="date" className="form-control" value="2020-09-01" />
+                                <input type="date" className="form-control" value={assignment?.availableFromDate}
+   onChange={(e) =>
+            dispatch(selectAssignment({ ...assignment, availableFromDate: e.target.value }))
+          } />
                             </div>
                             <div className="col-md-6">
                                 <label htmlFor="until" className="form-label">Until</label>
-                                <input type="date" className="form-control" value="2020-09-01" />
+                                <input type="date" className="form-control" value={assignment?.availableUntilDate}
+  onChange={(e) =>
+            dispatch(selectAssignment({ ...assignment, availableUntilDate: e.target.value }))
+          } />
                             </div>
                         </div>
                     </div>
@@ -103,7 +153,8 @@ function AssignmentEditor() {
           <label className="form-check-label" htmlFor="checkbox">Notify users that this content has changed</label>
         </div>
         <div className="col-sm-4 text-end">
-        <button onClick={handleSave} className="btn btn-success ms-2 float-end">
+      <button className="btn btn-success ms-2 float-end"
+        onClick={() => handleSave()}>
         Save
       </button>
       <Link to={`/Kanbas/Courses/${courseId}/Assignments`}
@@ -114,6 +165,7 @@ function AssignmentEditor() {
       </div>
       <hr/>
     </div>
-  );
+    );
 }
+
 export default AssignmentEditor;
